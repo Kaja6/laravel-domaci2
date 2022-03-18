@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Dress;
+use App\Models\User;
+use App\Models\Type;
+use App\Models\Designer;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,6 +18,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        Dress::truncate();
+        User::truncate();
+        Designer::truncate();
+        Type::truncate();
+
+        $this->call([
+            TypeSeeder::class
+        ]);
+
+        Dress::factory(10)->create();
     }
 }

@@ -17,7 +17,8 @@ class DesignerFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name'=>$this->faker->word(),
+            'country'=>$this->faker->word()
         ];
     }
 }
