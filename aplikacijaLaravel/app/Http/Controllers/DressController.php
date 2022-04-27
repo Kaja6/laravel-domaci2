@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\DressResource;
 use App\Models\Dress;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class DressController extends Controller
 {
@@ -20,7 +22,12 @@ class DressController extends Controller
     {
         $dresses = Dress::all();
 
-        return DressResource::collection($dresses);
+        $my_dresses=array();
+        foreach($dresses as $dress){
+            array_push($my_dresses,new DressResource($dress));
+        }
+
+        return $my_dresses;
     }
 
     /**
@@ -33,6 +40,49 @@ class DressController extends Controller
         //
     }
 
+    public function getByDesigner($designer_id){
+        $dresses=Dress::get()->where('designer_id',$designer_id);
+
+        if(count($dresses)==0){
+            return response()->json('Designer with this id does not exist!');
+        }
+
+        $my_dresses=array();
+        foreach($dresses as $dress){
+            array_push($my_dresses,new DressResource($dress));
+        }
+
+        return $my_dresses;
+    }
+
+    public function myDresses(Request $request){
+        $dresses=Dress::get()->where('user_id',Auth::user()->id);
+        if(count($dresses)==0){
+            return 'You do not have saved dresses!';
+        }
+        $my_dresses=array();
+        foreach($dresses as $dress){
+            array_push($my_dresses,new DressResource($dress));
+        }
+
+        return $my_dresses;
+    }
+
+    public function getByType($type_id){
+        $dresses=Dress::get()->where('type_id',$type_id);
+
+        if(count($dresses)==0){
+            return response()->json('ID of this type does not exist!');
+        }
+
+        $my_dresses=array();
+        foreach($dresses as $dress){
+            array_push($my_dresses,new DressResource($dress));
+        }
+
+        return $my_dresses;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -41,7 +91,29 @@ class DressController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator=Validator::make($request->all(),[
+            'model'=>'required|String|max:255',
+            'color'=>'required|String|max:255',
+            'releaseYear'=>'required|Integer|max:4',
+            'designer_id'=>'required',
+            'type_id'=>'required'
+
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+        $dress=new Dress;
+        $dress->model=$request->model;
+        $dress->color=$request->color;
+        $dress->releaseYear=$request->releaseYear;
+        $dress->user_id=Auth::user()->id;
+        $dress->type_id=$request->type_id;
+        $dress->designer_id=$request->designer_id;
+
+        $dress->save();
+
+        return response()->json(['Dress is saved successfully!',new DressResource($dress)]);
     }
 
     /**
@@ -75,7 +147,32 @@ class DressController extends Controller
      */
     public function update(Request $request, Dress $dress)
     {
-        //
+        $validator=Validator::make($request->all(),[
+            'model'=>'required|String|max:255',
+            'color'=>'required|String|max:255',
+            'releaseYear'=>'required|Integer|max:4',
+            'designer_id'=>'required',
+            'type_id'=>'required'
+
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+        $dress=new Dress;
+        $dress->model=$request->model;
+        $dress->color=$request->color;
+        $dress->releaseYear=$request->releaseYear;
+        $dress->user_id=Auth::user()->id;
+        $dress->type_id=$request->type_id;
+        $dress->designer_id=$request->designer_id;
+
+        $result=$dress->update();
+
+        if($result==false){
+            return response()->json('Difficulty with updating!');
+        }
+        return response()->json(['Dress is updated successfully!',new DressResource($dress)]);
     }
 
     /**
@@ -86,6 +183,8 @@ class DressController extends Controller
      */
     public function destroy(Dress $dress)
     {
-        //
+        $dress->delete();
+
+        return response()->json('Dress '.$auto->model .'is deleted successfully!');
     }
 }

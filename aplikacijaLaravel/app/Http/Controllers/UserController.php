@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -14,8 +15,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return $users;
+        $users=User::all();
+
+        if(count($users)==0){
+            return response()->json('There is no registered users in the system!');
+        }
+        $my_users=array();
+        foreach($users as $user){
+            array_push($my_users,new UserResource($user));
+        }
+        return $my_users;
     }
 
     /**
@@ -36,19 +45,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user=new User;
-        $user->name=$request->name;
-        $user->email=$request->email;
-        $password=$request->password;
-        $cryptedPassword=bcrypt($password);
-        $user->email_verified_at=date('Y-m-d H:i:s');
-        $user->password=$cryptedPassword;
-
-        $result=$user->save();
-        if($result==true){
-            return "Uspesno ste se prijavili!";
-        }
-        return "Problem pri registraciji korisnika!";
+        //
     }
 
     /**
