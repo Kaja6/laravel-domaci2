@@ -12,6 +12,9 @@ class DressResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
+
+    public static $wrap='dress';
+
     public function toArray($request)
     {
         return [

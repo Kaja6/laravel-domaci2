@@ -94,7 +94,7 @@ class DressController extends Controller
         $validator=Validator::make($request->all(),[
             'model'=>'required|String|max:255',
             'color'=>'required|String|max:255',
-            'releaseYear'=>'required|Integer|max:4',
+            'releaseYear'=>'required|Integer|max:2023',
             'designer_id'=>'required',
             'type_id'=>'required'
 
@@ -150,7 +150,7 @@ class DressController extends Controller
         $validator=Validator::make($request->all(),[
             'model'=>'required|String|max:255',
             'color'=>'required|String|max:255',
-            'releaseYear'=>'required|Integer|max:4',
+            'releaseYear'=>'required|Integer|max:2023',
             'designer_id'=>'required',
             'type_id'=>'required'
 
@@ -159,7 +159,7 @@ class DressController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors());
         }
-        $dress=new Dress;
+        
         $dress->model=$request->model;
         $dress->color=$request->color;
         $dress->releaseYear=$request->releaseYear;
@@ -185,6 +185,6 @@ class DressController extends Controller
     {
         $dress->delete();
 
-        return response()->json('Dress '.$auto->model .'is deleted successfully!');
+        return response()->json('Dress '.$auto->model .' is deleted successfully!');
     }
 }
